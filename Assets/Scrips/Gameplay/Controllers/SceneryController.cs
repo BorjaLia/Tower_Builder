@@ -38,7 +38,7 @@ public class SceneryController : MonoBehaviour
 
     private void Start()
     {
-        GameplayManager.OnHeightUpdated += UpdateTargetHeight;
+        GameplayManager.OnTowerPosUpdated += UpdateTargetHeight;
 
         foreach (CarData car in cars)
         {
@@ -59,12 +59,12 @@ public class SceneryController : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameplayManager.OnHeightUpdated -= UpdateTargetHeight;
+        GameplayManager.OnTowerPosUpdated -= UpdateTargetHeight;
     }
 
-    private void UpdateTargetHeight(float newHeight)
+    private void UpdateTargetHeight(Vector2 newHeight)
     {
-        if (newHeight > heightLimit)
+        if (newHeight.y > heightLimit)
         {
             active = false;
         }

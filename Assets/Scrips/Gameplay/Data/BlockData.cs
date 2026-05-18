@@ -11,12 +11,8 @@ public class BlockData : ScriptableObject
 
     [Header("Visual")]
 
-    [Tooltip("Model")]
-    public Mesh blockMesh;
-
-    [Tooltip("Material")]
-    public Material blockMaterial;
-
+    [Tooltip("The 3D model to instantiate")]
+    public GameObject blockModel;
 
     [Header("Physics")]
 

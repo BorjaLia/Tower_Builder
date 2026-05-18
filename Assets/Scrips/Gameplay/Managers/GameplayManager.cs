@@ -8,7 +8,7 @@ public class GameplayManager : Singleton<GameplayManager>
     // Events
     public static event Action<int> OnScoreUpdated;
     public static event Action<int> OnStrikeUpdated;
-    public static event Action<float> OnHeightUpdated;
+    public static event Action<Vector2> OnTowerPosUpdated;
     public static event Action<int> OnLivesUpdated;
     public static event Action OnGameOver;
     public static event Action<bool> OnPauseToggled;
@@ -66,7 +66,7 @@ public class GameplayManager : Singleton<GameplayManager>
     {
         OnScoreUpdated?.Invoke(currentScore);
         OnStrikeUpdated?.Invoke(currentStrikes);
-        OnHeightUpdated?.Invoke(currentHeight);
+        OnTowerPosUpdated?.Invoke(new Vector2(0.0f,currentHeight));
         OnLivesUpdated?.Invoke(currentLives);
     }
 
@@ -260,6 +260,7 @@ public class GameplayManager : Singleton<GameplayManager>
     {
         activeTowerBlocks.RemoveAll(block => block == null);
 
+        float topX = 0f;
         if (activeTowerBlocks.Count == 0)
         {
             currentHeight = basePlatformY;
@@ -271,13 +272,14 @@ public class GameplayManager : Singleton<GameplayManager>
             {
                 if (block.transform.position.y > highestY)
                 {
+                    topX = block.transform.position.x;
                     highestY = block.transform.position.y;
                 }
             }
             currentHeight = highestY;
         }
 
-        OnHeightUpdated?.Invoke(currentHeight);
+        OnTowerPosUpdated?.Invoke(new Vector2(topX,currentHeight));
     }
 
     public void EndGame()

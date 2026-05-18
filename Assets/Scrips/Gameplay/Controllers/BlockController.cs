@@ -9,7 +9,7 @@ public class BlockController : MonoBehaviour
     public Rigidbody rb { get; private set; }
     private bool hasReportedLanding = false;
 
-    public static Transform lastPlacedBlock;
+    private float placedY;
 
     private void Awake()
     {
@@ -45,7 +45,10 @@ public class BlockController : MonoBehaviour
     {
         if (other.CompareTag("DeathZone"))
         {
-            GameplayManager.s_instance.OnBlockHitDeathZone(this);
+            if (!hasReportedLanding || transform.position.y < placedY - 0.5f)
+            {
+                GameplayManager.s_instance.OnBlockHitDeathZone(this);
+            }
         }
     }
 
@@ -53,6 +56,9 @@ public class BlockController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Base"))
         {
+            hasReportedLanding = true;
+            placedY = transform.position.y;
+
             GameplayManager.s_instance.OnBlockHitBase(this);
             return;
         }
