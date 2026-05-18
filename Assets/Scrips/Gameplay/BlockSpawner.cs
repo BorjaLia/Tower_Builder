@@ -6,21 +6,16 @@ public class BlockSpawner : MonoBehaviour
 {
     [Header("Spawner config")]
 
-    [Tooltip("Base prefab")]
-    [SerializeField] private GameObject blockPrefab;
-
     [Tooltip("Block spawn location")]
     [SerializeField] private Transform spawnPoint;
 
     [Tooltip("Block container on hierarchy")]
     [SerializeField] private Transform dynamicElementsContainer;
 
-
     [Header("Block types")]
 
     [Tooltip("Available ScriptableObjects to spawn")]
     [SerializeField] private List<BlockData> availableBlocks;
-
 
     [Header("Movement")]
 
@@ -105,8 +100,14 @@ public class BlockSpawner : MonoBehaviour
 
         BlockData chosenData = ChooseBlockBasedOnWeight();
 
-        GameObject newBlockObj = Instantiate(blockPrefab, spawnPoint.position, Quaternion.identity, transform);
+        GameObject newBlockObj = Instantiate(chosenData.blockModel, spawnPoint.position, Quaternion.identity, transform);
         currentBlock = newBlockObj.GetComponent<BlockController>();
+
+        if (currentBlock == null)
+        {
+            currentBlock = newBlockObj.AddComponent<BlockController>();
+        }
+
         currentBlock.Initialize(chosenData);
     }
 

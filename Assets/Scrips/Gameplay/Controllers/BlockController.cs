@@ -25,9 +25,6 @@ public class BlockController : MonoBehaviour
 
         this.transform.localScale = data.scale;
 
-        GetComponent<MeshFilter>().mesh = data.blockMesh;
-        GetComponent<MeshRenderer>().material = data.blockMaterial;
-
         rb.mass = data.mass;
         rb.linearDamping = data.linearDamping;
         rb.angularDamping = data.angularDamping;
