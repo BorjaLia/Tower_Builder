@@ -44,6 +44,7 @@ public class BlockController : MonoBehaviour
         {
             if (!hasReportedLanding || transform.position.y < placedY - 0.5f)
             {
+                AudioManager.s_instance.PlaySFX("BlockHit");
                 GameplayManager.s_instance.OnBlockHitDeathZone(this);
             }
         }
@@ -51,6 +52,8 @@ public class BlockController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        AudioManager.s_instance.PlaySFX("BlockHit");
+
         if (collision.gameObject.CompareTag("Base"))
         {
             hasReportedLanding = true;

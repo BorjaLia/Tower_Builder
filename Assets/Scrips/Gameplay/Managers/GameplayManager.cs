@@ -42,11 +42,11 @@ public class GameplayManager : Singleton<GameplayManager>
     private List<BlockController> activeTowerBlocks = new List<BlockController>();
     public BlockController currentFallingBlock { get; private set; }
 
-    private const string MAIN_MENU_SCENE_NAME = "MainMenuScene";
+    private const string mainMenuSceneName = "MainMenuScene";
 
     private bool isCheckingStability = false;
     private float stabilityTimer = 0f;
-    private const float STABILITY_DELAY = 0.1f;
+    private const float stabilityDelay = 0.1f;
 
     private bool hasLostLifeThisDrop = false;
     protected override void Awake()
@@ -148,6 +148,7 @@ public class GameplayManager : Singleton<GameplayManager>
             if (block == currentFallingBlock)
             {
                 bool isPerfect = CheckPerfectPlacement(block);
+                if (isPerfect) AudioManager.s_instance.PlaySFX("BlockHitPerfect");
                 AcceptValidBlock(block, isPerfect);
             }
         }
@@ -178,7 +179,7 @@ public class GameplayManager : Singleton<GameplayManager>
             if (block == currentFallingBlock)
             {
                 currentFallingBlock = null;
-                stabilityTimer = STABILITY_DELAY;
+                stabilityTimer = stabilityDelay;
                 isCheckingStability = true;
             }
         }
@@ -233,7 +234,7 @@ public class GameplayManager : Singleton<GameplayManager>
             }
         }
 
-        stabilityTimer = STABILITY_DELAY;
+        stabilityTimer = stabilityDelay;
         isCheckingStability = true;
     }
 
@@ -296,7 +297,7 @@ public class GameplayManager : Singleton<GameplayManager>
 
     public void ReturnToMenu()
     {
-        SceneManager.LoadScene(MAIN_MENU_SCENE_NAME);
+        SceneManager.LoadScene(mainMenuSceneName);
     }
 
     public void RetryGame()

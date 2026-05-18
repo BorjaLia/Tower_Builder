@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HeavyBlockData
   m_EditorClassIdentifier: 
   blockName: Heavy Block
-  blockModel: {fileID: 919132149155446097, guid: 3397140cf7a29a8409147e60ac6071df, type: 3}
+  blockModel: {fileID: 919132149155446097, guid: db995aa2bd6eff143a1946b2c53073cb, type: 3}
   mass: 2
   linearDamping: 1
   angularDamping: 1
