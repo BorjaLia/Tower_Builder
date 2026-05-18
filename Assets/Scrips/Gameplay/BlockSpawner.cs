@@ -29,27 +29,22 @@ public class BlockSpawner : MonoBehaviour
     [Tooltip("Maximum movement speed")]
     [SerializeField] private float maxMoveSpeed = 10.0f;
 
-    [Tooltip("Vertical smoothing")]
-    [SerializeField] private float smoothSpeed = 2.0f;
-
+    [Tooltip("Percentage of applied speed while dropping")]
+    [SerializeField] private float dropSpeedCushioning = 1.0f;
     [Tooltip("Max movement range")]
     [SerializeField] private float moveRangeX = 5.0f;
 
-    [Tooltip("Height over last placed block")]
-    [SerializeField] private float heightOffset = 6f;
-
     private BlockController currentBlock;
-    private Vector3 initialPosition;
     private float currentSpeed;
     private float offsetX;
-    private float targetY;
+    private float initialLocalX;
 
     private void Start()
     {
-        initialPosition = transform.position;
-        targetY = initialPosition.y;
+        initialLocalX = transform.localPosition.x;
+
         GameplayManager.OnScoreUpdated += CalculateDifficulty;
-        GameplayManager.OnHeightUpdated += UpdateSpawnerHeight;
+        GameplayManager.OnTowerStabilized += SpawnNewBlock;
 
         CalculateDifficulty(0);
         SpawnNewBlock();
@@ -58,7 +53,7 @@ public class BlockSpawner : MonoBehaviour
     private void OnDestroy()
     {
         GameplayManager.OnScoreUpdated -= CalculateDifficulty;
-        GameplayManager.OnHeightUpdated -= UpdateSpawnerHeight;
+        GameplayManager.OnTowerStabilized -= SpawnNewBlock;
     }
 
     private void CalculateDifficulty(int score)
@@ -80,14 +75,20 @@ public class BlockSpawner : MonoBehaviour
 
     private void Update()
     {
-        float lastDir = offsetX;
+        float previousX = transform.position.x;
+
         MoveSpawner();
+
+        float currentX = transform.position.x;
 
         if (currentBlock != null && !GameplayManager.s_instance.IsPaused && !GameplayManager.s_instance.IsGameOver)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
             {
-                ReleaseBlock(new Vector3(10 * (offsetX - lastDir), 0.0f,0.0f));
+                float currentVelocityX = (currentX - previousX) / Time.deltaTime;
+                Vector3 inheritedVelocity = new Vector3(currentVelocityX * dropSpeedCushioning, 0.0f, 0.0f);
+
+                ReleaseBlock(inheritedVelocity);
             }
         }
     }
@@ -95,25 +96,12 @@ public class BlockSpawner : MonoBehaviour
     private void MoveSpawner()
     {
         offsetX = Mathf.Sin(Time.time * currentSpeed) * moveRangeX;
-        float currentY = Mathf.Lerp(transform.position.y, targetY, Time.deltaTime * smoothSpeed);
 
-        transform.position = new Vector3(initialPosition.x + offsetX, currentY, transform.position.z);
+        transform.localPosition = new Vector3(initialLocalX + offsetX, transform.localPosition.y, transform.localPosition.z);
     }
-
-    private void UpdateSpawnerHeight(float newTowerHeight)
-    {
-        targetY = newTowerHeight + heightOffset;
-    }
-
     private void SpawnNewBlock()
     {
-        if (availableBlocks == null || availableBlocks.Count == 0)
-        {
-            Debug.LogError("No blocks available to spawn");
-            return;
-        }
-
-        BlockData randomData = availableBlocks[Random.Range(0, availableBlocks.Count)];
+        if (availableBlocks == null || availableBlocks.Count == 0) return;
 
         BlockData chosenData = ChooseBlockBasedOnWeight();
 
@@ -144,14 +132,13 @@ public class BlockSpawner : MonoBehaviour
         return availableBlocks[0];
     }
 
-    private void ReleaseBlock(Vector3 dir)
+    private void ReleaseBlock(Vector3 inheritedVelocity)
     {
-        currentBlock.transform.SetParent(dynamicElementsContainer);
+        GameplayManager.s_instance.RegisterNewBlockDrop(currentBlock);
 
-        currentBlock.DropBlock(dir);
+        currentBlock.transform.SetParent(dynamicElementsContainer);
+        currentBlock.DropBlock(inheritedVelocity);
 
         currentBlock = null;
-
-        Invoke(nameof(SpawnNewBlock), 1.0f);
     }
 }

@@ -13,6 +13,8 @@ public class GameplayManager : Singleton<GameplayManager>
     public static event Action OnGameOver;
     public static event Action<bool> OnPauseToggled;
 
+    public static event Action OnTowerStabilized;
+
     [Header("Game State")]
     public bool IsGameOver { get; private set; }
     public bool IsPaused { get; private set; }
@@ -29,16 +31,25 @@ public class GameplayManager : Singleton<GameplayManager>
     [SerializeField] private int startingLives = 3;
 
     [Tooltip("Base starting position")]
-    [SerializeField] private float basePlatformY = -3f;
+    [SerializeField] private float basePlatformY = 0.0f;
 
     [Tooltip("Max active blocks (lock older blocks in place)")]
     [SerializeField] private int maxActivePhysicsBlocks = 5;
 
+    [Tooltip("How close (in X) a block needs to be to count as perfect")]
+    [SerializeField] private float perfectPlacementTolerance = 0.15f;
+
     // List of placed blocks
     private List<BlockController> activeTowerBlocks = new List<BlockController>();
+    public BlockController currentFallingBlock { get; private set; }
 
     private const string MAIN_MENU_SCENE_NAME = "MainMenuScene";
 
+    private bool isCheckingStability = false;
+    private float stabilityTimer = 0f;
+    private const float STABILITY_DELAY = 0.1f;
+
+    private bool hasLostLifeThisDrop = false;
     protected override void Awake()
     {
         base.Awake();
@@ -58,6 +69,24 @@ public class GameplayManager : Singleton<GameplayManager>
         OnStrikeUpdated?.Invoke(currentStrikes);
         OnHeightUpdated?.Invoke(currentHeight);
         OnLivesUpdated?.Invoke(currentLives);
+    }
+
+    private void Update()
+    {
+        if (isCheckingStability && !IsGameOver && !IsPaused)
+        {
+            stabilityTimer -= Time.deltaTime;
+
+            if (stabilityTimer <= 0f)
+            {
+                if (IsTowerStable())
+                {
+                    isCheckingStability = false;
+                    RecalculateTowerHeight();
+                    OnTowerStabilized?.Invoke();
+                }
+            }
+        }
     }
 
     public void LoseLife()
@@ -86,11 +115,99 @@ public class GameplayManager : Singleton<GameplayManager>
 
         OnPauseToggled?.Invoke(IsPaused);
     }
+    public void RegisterNewBlockDrop(BlockController block)
+    {
+        currentFallingBlock = block;
+        hasLostLifeThisDrop = false;
+    }
 
-    public void BlockLanded(BlockController block, bool isPerfectPlacement)
+    public void OnBlockHitBase(BlockController block)
     {
         if (IsGameOver) return;
 
+        if (activeTowerBlocks.Count == 0)
+        {
+            if (currentFallingBlock == block)
+            {
+                AcceptValidBlock(block, true);
+            }
+        }
+        else
+        {
+            if (activeTowerBlocks.Count > 0 && activeTowerBlocks[0] == block) return;
+
+            OnBlockHitDeathZone(block);
+        }
+    }
+
+    public void OnBlockLanded(BlockController block, string hitTag)
+    {
+        if (IsGameOver) return;
+
+        if (hitTag == "Block")
+        {
+            if (block == currentFallingBlock)
+            {
+                bool isPerfect = CheckPerfectPlacement(block);
+                AcceptValidBlock(block, isPerfect);
+            }
+        }
+    }
+
+    public void OnBlockHitDeathZone(BlockController block)
+    {
+        if (IsGameOver) return;
+
+        bool isCurrentOrTop = (block == currentFallingBlock) ||
+                              (activeTowerBlocks.Count > 0 && block == activeTowerBlocks[activeTowerBlocks.Count - 1]);
+
+        if (activeTowerBlocks.Contains(block))
+        {
+            activeTowerBlocks.Remove(block);
+        }
+
+        if (block != null) Destroy(block.gameObject);
+
+        if (isCurrentOrTop)
+        {
+            if (!hasLostLifeThisDrop)
+            {
+                LoseLife();
+                hasLostLifeThisDrop = true;
+            }
+
+            if (block == currentFallingBlock)
+            {
+                currentFallingBlock = null;
+                stabilityTimer = STABILITY_DELAY;
+                isCheckingStability = true;
+            }
+        }
+
+        RecalculateTowerHeight();
+    }
+
+    private bool CheckPerfectPlacement(BlockController newBlock)
+    {
+        if (activeTowerBlocks.Count == 0) return true;
+
+        BlockController topBlock = activeTowerBlocks[activeTowerBlocks.Count - 1];
+        float differenceX = Mathf.Abs(newBlock.transform.position.x - topBlock.transform.position.x);
+
+        if (differenceX <= perfectPlacementTolerance)
+        {
+            newBlock.transform.position = new Vector3(topBlock.transform.position.x, newBlock.transform.position.y, newBlock.transform.position.z);
+            newBlock.rb.linearVelocity = Vector3.zero;
+            newBlock.rb.angularVelocity = Vector3.zero;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void AcceptValidBlock(BlockController block, bool isPerfectPlacement)
+    {
+        currentFallingBlock = null;
         activeTowerBlocks.Add(block);
 
         int points = block.currentData.scoreValue;
@@ -108,54 +225,37 @@ public class GameplayManager : Singleton<GameplayManager>
         OnScoreUpdated?.Invoke(currentScore);
         OnStrikeUpdated?.Invoke(currentStrikes);
 
-        RecalculateTowerHeight();
-
-        // Freze any block older than the limit
         if (activeTowerBlocks.Count > maxActivePhysicsBlocks)
         {
-            int oldestIndex = activeTowerBlocks.Count - maxActivePhysicsBlocks - 1;
-            BlockController oldestBlock = activeTowerBlocks[oldestIndex];
-
-            if (oldestBlock != null)
+            BlockController oldestBlock = activeTowerBlocks[activeTowerBlocks.Count - maxActivePhysicsBlocks - 1];
+            if (oldestBlock != null && oldestBlock.rb != null)
             {
-                Rigidbody rb = oldestBlock.GetComponent<Rigidbody>();
-                if (rb != null) rb.isKinematic = true;
+                oldestBlock.rb.isKinematic = true;
             }
         }
+
+        stabilityTimer = STABILITY_DELAY;
+        isCheckingStability = true;
     }
 
-    public void BlockFellFromTower(BlockController fallenBlock)
+    private bool IsTowerStable()
     {
-        if (IsGameOver) return;
+        int startIndex = Mathf.Max(0, activeTowerBlocks.Count - maxActivePhysicsBlocks);
 
-        bool isLastBlock = (BlockController.lastPlacedBlock == fallenBlock.transform);
-
-        if (activeTowerBlocks.Contains(fallenBlock))
+        for (int i = startIndex; i < activeTowerBlocks.Count; i++)
         {
-            activeTowerBlocks.Remove(fallenBlock);
-
-            if (isLastBlock)
+            BlockController block = activeTowerBlocks[i];
+            if (block != null && block.rb != null && !block.rb.isKinematic)
             {
-                if (activeTowerBlocks.Count > 0)
+                if (block.rb.linearVelocity.magnitude > 0.1f || block.rb.angularVelocity.magnitude > 0.1f)
                 {
-                    BlockController.lastPlacedBlock = activeTowerBlocks[activeTowerBlocks.Count - 1].transform;
-                }
-                else
-                {
-                    BlockController.lastPlacedBlock = null;
-                    isLastBlock = false;
+                    return false;
                 }
             }
         }
 
-        if (isLastBlock)
-        {
-            LoseLife();
-        }
-
-        RecalculateTowerHeight();
+        return true;
     }
-
 
     private void RecalculateTowerHeight()
     {
@@ -170,7 +270,7 @@ public class GameplayManager : Singleton<GameplayManager>
             float highestY = basePlatformY;
             foreach (var block in activeTowerBlocks)
             {
-                if (block != null && block.transform.position.y > highestY)
+                if (block.transform.position.y > highestY)
                 {
                     highestY = block.transform.position.y;
                 }
