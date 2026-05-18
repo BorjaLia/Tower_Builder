@@ -35,10 +35,10 @@ public class BlockController : MonoBehaviour
         this.gameObject.tag = "Block";
     }
 
-    public void DropBlock(Vector3 dir)
+    public void DropBlock(Vector3 inheritedVelocity)
     {
         rb.isKinematic = false;
-        rb.AddForce(rb.linearVelocity,ForceMode.VelocityChange);
+        rb.AddForce(inheritedVelocity, ForceMode.VelocityChange);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -56,6 +56,7 @@ public class BlockController : MonoBehaviour
             GameplayManager.s_instance.OnBlockHitBase(this);
             return;
         }
+
         if (hasReportedLanding) return;
 
         if (collision.gameObject.CompareTag("Block"))

@@ -12,7 +12,6 @@ public class GameplayManager : Singleton<GameplayManager>
     public static event Action<int> OnLivesUpdated;
     public static event Action OnGameOver;
     public static event Action<bool> OnPauseToggled;
-
     public static event Action OnTowerStabilized;
 
     [Header("Game State")]
