@@ -1311,13 +1311,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 396070730}
     m_Modifications:
+    - target: {fileID: 2098529789793865958, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2108415688888649798, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2565906828424765801, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3674497618672607067, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4092159248980832289, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4149444840789093028, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -1335,9 +1347,21 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4511712770162331867, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4652590567879388330, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
       propertyPath: m_Name
       value: Settings
+      objectReference: {fileID: 0}
+    - target: {fileID: 6030465772214042773, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6172942778114135887, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9117318043277359803, guid: d0d3f51fff4e99c469f84f3e1e9aa620, type: 3}
       propertyPath: m_Pivot.x
@@ -1517,10 +1541,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Retry
-
-
-'
+  m_text: Retry
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
