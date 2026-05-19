@@ -58,11 +58,16 @@ public class BlockSpawner : MonoBehaviour
         if (score < lowThreshold)
         {
             currentSpeed = startMoveSpeed;
+            return;
         }
 
         int highScore = DataManager.s_instance.highScore;
 
-        currentSpeed = Mathf.Lerp(startMoveSpeed, maxMoveSpeed, (float)((float)score / (float)Mathf.Min((2 * highScore), highThreshold)));
+        highScore = Mathf.Max(20, highScore);
+
+        float difficultyPercentage = (float)score / Mathf.Min((2 * highScore), highThreshold);
+
+        currentSpeed = Mathf.Lerp(startMoveSpeed, maxMoveSpeed, difficultyPercentage);
 
         print($"HighScore: {highScore}. New speed: {currentSpeed}. Threshold: {(float)((float)score / (float)Mathf.Min(2 * highScore, highThreshold))}");
     }
