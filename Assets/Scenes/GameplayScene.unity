@@ -1517,7 +1517,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Resume
+  m_text: 'Retry
+
 
 '
   m_isRightToLeft: 0
@@ -3409,7 +3410,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1142790710}
         m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: ResumeGame
+        m_MethodName: RetryGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3502,7 +3503,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c41ae9da45ad1640baf2e1571bd1af6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockPrefab: {fileID: 6657449993584099808, guid: 2e22d6b6704286744a4755502e3eeb15, type: 3}
   spawnPoint: {fileID: 1969209817}
   dynamicElementsContainer: {fileID: 2060867516}
   availableBlocks:

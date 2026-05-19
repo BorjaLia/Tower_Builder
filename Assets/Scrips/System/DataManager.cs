@@ -8,12 +8,14 @@ public class DataManager : PersistentSingleton<DataManager>
     private const string MASTER_VOL_KEY = "MasterVolume";
     private const string MUSIC_VOL_KEY = "MusicVolume";
     private const string SFX_VOL_KEY = "SFXVolume";
+    private const string UI_VOL_KEY = "UIVolume";
 
     // publig get, private set
     public int highScore { get; private set; }
     public float masterVolume { get; private set; }
     public float musicVolume { get; private set; }
     public float sfxVolume { get; private set; }
+    public float uiVolume { get; private set; }
 
     protected override void Awake()
     {
@@ -29,6 +31,7 @@ public class DataManager : PersistentSingleton<DataManager>
         masterVolume = PlayerPrefs.GetFloat(MASTER_VOL_KEY, 1.0f);
         musicVolume = PlayerPrefs.GetFloat(MUSIC_VOL_KEY, 1.0f);
         sfxVolume = PlayerPrefs.GetFloat(SFX_VOL_KEY, 1.0f);
+        uiVolume = PlayerPrefs.GetFloat(UI_VOL_KEY, 1.0f);
 
         print("====================");
         print("Data loaded!");
@@ -36,6 +39,7 @@ public class DataManager : PersistentSingleton<DataManager>
         print($"Master Volume: {masterVolume}" );
         print($"Music Volume: {musicVolume}" );
         print($"SFX Volume: {sfxVolume}" );
+        print($"UI Volume: {uiVolume}" );
         print("====================");
     }
 
@@ -50,21 +54,25 @@ public class DataManager : PersistentSingleton<DataManager>
         }
     }
 
-    public void SaveVolumes(float master, float music, float sfx)
+    public void SaveVolumes(float master, float music, float sfx, float ui)
     {
         masterVolume = master;
         musicVolume = music;
         sfxVolume = sfx;
+        uiVolume = ui;
 
         PlayerPrefs.SetFloat(MASTER_VOL_KEY, masterVolume);
         PlayerPrefs.SetFloat(MUSIC_VOL_KEY, musicVolume);
         PlayerPrefs.SetFloat(SFX_VOL_KEY, sfxVolume);
+        PlayerPrefs.SetFloat(UI_VOL_KEY, uiVolume);
         PlayerPrefs.Save();
+
         print("====================");
         print("New volume data:");
         print($"Master Volume: {masterVolume}");
         print($"Music Volume: {musicVolume}");
         print($"SFX Volume: {sfxVolume}");
+        print($"UI Volume: {uiVolume}");
         print("====================");
     }
 }
