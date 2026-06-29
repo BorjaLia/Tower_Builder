@@ -33,6 +33,7 @@ public class DataManager : PersistentSingleton<DataManager>
         sfxVolume = PlayerPrefs.GetFloat(SFX_VOL_KEY, 1.0f);
         uiVolume = PlayerPrefs.GetFloat(UI_VOL_KEY, 1.0f);
 
+        // Sugestion: bloque de prints de debug en la entrega; conviene quitarlos o envolverlos en #if UNITY_EDITOR para no ensuciar la consola del build.
         print("====================");
         print("Data loaded!");
         print($"Highscore: {highScore}" );

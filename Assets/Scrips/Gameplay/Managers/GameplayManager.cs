@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameplayManager : Singleton<GameplayManager>
 {
+    // Warning: eventos 'static' sobre un manager de escena: si algun suscriptor olvida desuscribirse en OnDestroy, queda referenciado entre reinicios de escena y se invoca sobre objetos destruidos.
     // Events
     public static event Action<int> OnScoreUpdated;
     public static event Action<int> OnStrikeUpdated;
@@ -247,6 +248,7 @@ public class GameplayManager : Singleton<GameplayManager>
             BlockController block = activeTowerBlocks[i];
             if (block != null && block.rb != null && !block.rb.isKinematic)
             {
+                // Sugestion: 0.1f como umbral de "quieto" es un numero magico repetido. Extraer a una constante stabilityThreshold.
                 if (block.rb.linearVelocity.magnitude > 0.1f || block.rb.angularVelocity.magnitude > 0.1f)
                 {
                     return false;

@@ -52,6 +52,7 @@ public class BlockSpawner : MonoBehaviour
 
     private void CalculateDifficulty(int score)
     {
+        // Sugestion: estos umbrales son numeros magicos; conviene exponerlos como [SerializeField].
         int lowThreshold = 50; // Minimum necesary highscore for dynamic difficlty
         int highThreshold = 1000; // Maximum highscore for dynamic difficlty
 
@@ -80,6 +81,7 @@ public class BlockSpawner : MonoBehaviour
 
         float currentX = transform.position.x;
 
+        // Warning: lectura de Input mezclada con la logica del spawner en Update; convendria separar el input en su propia clase/InputSystem para desacoplar.
         if (currentBlock != null && !GameplayManager.s_instance.IsPaused && !GameplayManager.s_instance.IsGameOver)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
@@ -105,6 +107,7 @@ public class BlockSpawner : MonoBehaviour
         BlockData chosenData = ChooseBlockBasedOnWeight();
 
         GameObject newBlockObj = Instantiate(chosenData.blockModel, spawnPoint.position, Quaternion.identity, transform);
+        // Sugestion: el modelo del BlockData deberia traer ya el BlockController en el prefab; el AddComponent en runtime indica un prefab incompleto.
         currentBlock = newBlockObj.GetComponent<BlockController>();
 
         if (currentBlock == null)

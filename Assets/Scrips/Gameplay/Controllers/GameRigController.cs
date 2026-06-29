@@ -1,9 +1,11 @@
 using UnityEngine;
+// Warning: 'using static UnityEngine.GraphicsBuffer' no se usa.
 using static UnityEngine.GraphicsBuffer;
 
 public class GameRigController : MonoBehaviour
 {
     [Tooltip("How fast the rig follows the tower sideways")]
+    // Warning: smoothSpeed es Vector2 pero solo se usa .x; smoothSpeed.y queda muerto (la Y usa smoothSpeedY). Unificar a un float.
     [SerializeField] private Vector2 smoothSpeed = new Vector2(2.0f,2.0f);
 
     [Tooltip("How fast the rig follows the tower")]

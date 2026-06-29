@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody), typeof(BoxCollider))]
 public class BlockController : MonoBehaviour
 {
+    // Sugestion: en C# las propiedades publicas se nombran en PascalCase (CurrentData, Rb), no camelCase.
     public BlockData currentData { get; private set; }
     public Rigidbody rb { get; private set; }
     private bool hasReportedLanding = false;
@@ -29,6 +30,7 @@ public class BlockController : MonoBehaviour
         rb.linearDamping = data.linearDamping;
         rb.angularDamping = data.angularDamping;
 
+        // Warning: tags hardcodeados como string ("Block") repartidos por varios scripts; conviene centralizarlos en constantes para evitar typos.
         this.gameObject.tag = "Block";
     }
 
@@ -42,6 +44,7 @@ public class BlockController : MonoBehaviour
     {
         if (other.CompareTag("DeathZone"))
         {
+            // Sugestion: 0.5f es un numero magico; mejor una constante con nombre (ej. fallThreshold).
             if (!hasReportedLanding || transform.position.y < placedY - 0.5f)
             {
                 AudioManager.s_instance.PlaySFX("BlockHit");

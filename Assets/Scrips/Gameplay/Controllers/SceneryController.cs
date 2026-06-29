@@ -43,10 +43,13 @@ public class SceneryController : MonoBehaviour
         {
             if (car != null && car.carModel != null)
             {
+                // Sugestion: linea muy larga con varios numeros magicos (2.0f, 0.05f); extraer a metodo helper GetRandomSpawnPosition() mejoraria la legibilidad.
+                // Warning: Esta logica esta duplicada casi identica en Update().
                 Vector3 carPos = new Vector3(carsPosLimit.x - Random.Range(car.speedRange.x, car.speedRange.y)*2.0f, carLane.position.y, carLane.position.z + ((Random.value > 0.5f) ? -laneSize : laneSize) + Random.Range(-0.05f,0.05f));
                 GameObject spawnedCar = Instantiate(car.carModel, carPos, carLane.rotation, carLane);
                 spawnedCar.name = car.carName;
                 Car newCar = new Car(spawnedCar, Random.Range(car.speedRange.x, car.speedRange.y));
+                // Sugestion: agregar BoxCollider y Rigidbody por codigo en cada coche es costoso; mejor tenerlos ya en el prefab del modelo.
                 spawnedCar.AddComponent<BoxCollider>();
                 newCar.rb = spawnedCar.AddComponent<Rigidbody>();
                 newCar.speedRange = car.speedRange;
@@ -75,6 +78,7 @@ public class SceneryController : MonoBehaviour
 
         foreach (Car car in carInstances)
         {
+            // Warning: se manipula transform.position de objetos con Rigidbody desde Update; mover fisicas debe hacerse en FixedUpdate via rb.MovePosition.
             car.currentLifetime += Time.deltaTime;
             Vector3 carPos = car.carObj.transform.position;
             if (carPos.x >= carsPosLimit.y || car.currentLifetime > maxLifetime)

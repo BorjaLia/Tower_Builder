@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// Error: Todos los botones se setea el action por inspector!
+// Warning: Todos los if están inline. Poner debajo la instrucción dento del if.
 public class MainMenuManager : MonoBehaviour
 {
     [Header("UI Panels")]
@@ -12,6 +14,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        // Warning: Inline:...
         if (mainPanel) mainPanel.SetActive(true);
         if (settingsPanel) settingsPanel.SetActive(false);
         if (creditsPanel) creditsPanel.SetActive(false);
@@ -46,6 +49,7 @@ public class MainMenuManager : MonoBehaviour
         if (creditsPanel) creditsPanel.SetActive(false);
     }
 
+    // Error: la consigna pide ocultar/deshabilitar el boton Exit en WebGL. Aqui no hay guarda #if UNITY_WEBGL ni codigo que oculte el boton, y Application.Quit() no tiene efecto en WebGL.
     public void ExitGame()
     {
         Application.Quit();

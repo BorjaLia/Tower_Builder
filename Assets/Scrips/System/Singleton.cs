@@ -17,6 +17,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Component
     }
 }
 
+// Sugestion: PersistentSingleton duplica casi todo el codigo de Singleton; podria heredar de Singleton<T> y solo agregar DontDestroyOnLoad para no repetir logica.
 // Persistent singleton
 public abstract class PersistentSingleton<T> : MonoBehaviour where T : Component
 {
